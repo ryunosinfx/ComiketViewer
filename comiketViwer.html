@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title>コミケカタログビュアー</title>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="CV/base.css">
+<link rel="stylesheet alternate" href="baseA.css" title="スタイルA">
+<meta name="author" content="ryunosinfx@AGPL3/MIT">
+<meta name="keywords" content="コミケカタログビュアー">
+<meta name="description" content="コミケカタログビュアー">
+<meta name="robots" content="all">
+<script src="CV/jquery.js"></script>
+<script src="comikeData.js"></script>
+<script src="CV/comikeViewerConstants.js"></script>
+<script src="CV/comikeViewerInit.js"></script>
+</head>
+<body>
+<article>
+<hgroup id="header">
+
+<form id="hedderTopLine">
+	<div>コミケカタログビュアー</div>
+	<div><input type="checkbox" id="isNoShowBackgroundMap" />背景非表示</div>
+</form>
+<div id="menuHeader" class="menuHeader">
+	<div id="comiketTitel" class="Title"></div>
+	<div id="wday" class="wday">
+		<div id="wday1" class="wdayChildren">-</div>
+		<div id="wday2" class="wdayChildren">-</div>
+		<div id="wday3" class="wdayChildren">-</div>
+	</div>
+	<div id="menuAreas" class="menuAreas">
+		<div id="area1" class="areasChiled"></div>
+		<div id="area2" class="areasChiled"></div>
+		<div id="area3" class="areasChiled"></div>
+		<div id="area4" class="areasChiled"></divb>
+		<div id="area5" class="areasChiled"></div>
+		<div id="area6" class="areasChiled"></div>
+		<div id="area7" class="areasChiled"></div>
+		<div id="area8" class="areasChiled"></div>
+	</div>
+	<div id="menuMaps" class="menuMaps">
+		<div id="currentMap" class="mapChild">MAP</div>
+		<div id="checkList" class="mapChild">checkList</div>
+		<div id="currentDetail" class="mapChild">Circle詳細</div>
+	</div>
+	<div id="Search" class="Search">
+		<span>Find!</span>
+		<input type="text" id="inputWords"/>
+		<div id="serchButton" class="SearchChild">Go</div>
+	</div>
+</div>
+</hgroup>
+<section id="mainContents">
+<h1>マップ</h1>
+<div id="map" class="backgroundImage" id="mainContentsInner"></div>
+</section>
+<section>
+<h1>チェックリスト</h1>
+<div id="checkList"></div>
+</section>
+<section id="footer">
+	<form id="footerBottomLine">
+	</form>
+</section>
+</article>
+<div id="nowLoading" >
+	<div>
+	（´・ω・｀）今ブラウザさんが頑張ってる<br />だからちょっと、ちょっとだけまっててね<br />Now Loading・・・ 
+	</div>
+</div>
+<div class="circleDetail" id="circleDetail">
+	<div class="space" id="detailSpace"></div>
+	<img alt="大判サークルカット">
+	<div class="detail">
+		<div class="row" style="height:16px">
+			<div class="cap1miniLong" style="height:12px">読み</div><div class="textMiniLong" id="detailPronouce" style="height:12px"></div>
+			<div class="cap1miniShort" style="height:12px">曜</div><div class="textMiniShort" id="detailDay" style="height:12px"></div>
+		</div>
+		<div class="row">
+			<div class="cap1">CN</div><div class="text" id="detailCName"></div>
+		</div>
+		<div class="row" style="height:34px">
+			<div class="cap1miniShort" style="height:30px">PN</div><div class="textMiniShort" id="detailPN" style="height:30px"></div>
+			<div class="cap1miniLong" style="height:30px">刊行物</div><div class="textMiniLong" id="detailBook" style="height:30px"></div>
+		</div>
+		<div class="row" style="height:94px"><div class="cap1" style="height:90px">PR</div><div class="text" id="detailPR" style="height:90px"></div></div>
+		<div class="row">
+			<div class="cap1icon" id="detailURL">HP</div>
+			<div class="cap1icon" id="detailMail">Mail</div>
+			<div class="cap1icon" id="detailURLsale">通販１</div>
+			<div class="cap1icon" id="detailURLcm">通販２</div>
+		</div>
+	</div>
+</div>
+<div id='currentMapView' class='currntMap'></div>
+<div class="selectCircle" id="selectCircle"></div>
+<div id='genreTips' class='genreTips'></div>
+<div id='genreTips' class='genreTips'></div>
+<div id='viewDetailHistory' class='viewDetailHistory'>
+	<div id='viewDetailHistoryTitle' class='viewDetailHistoryTitle'>最近見たサークル</div>
+	<div id='viewDetailHistoryBody' class='viewDetailHistoryBody'></div>
+</div>
+<div id="BuildDataFile">
+	<div id="fileSelect">
+	  <form>
+		<div class="box">
+		  <p>コミケカタログJSONP変換器 (Firefox 8 later)</p>
+		  <div class="readme">
+		  		<pre>
+(´･ω･`)やぁ。ようこそコミケカタログビュアーへ。
+この表示は初回正常作動だから、まず見て落ちついて欲しい。
+
+うん、「まだファイル変換が完了していない」なんだ。済まない。
+Readmeも用意せずいきなりこれだからね、謝って許してくれと言うつもりはない。
+
+でも、このコミケカタログビュアーを見つけたとき、君は、きっと言葉では言い表せない
+「ときめき」みたいなものを感じてくれたと思う。
+殺伐としたコミケの中で、そういう気持ちを忘れないで欲しい、そう思って
+この説明にしたんだ。
+
+じゃあ、次の順番に従ってファイル変換をしていこうか。
+				</pre>
+		  		<OL>
+		  			<li>コミケカタログCDROM版を入手しましょう。</li>
+		  			<li>WINDOWS版のCDをパソコンに入れる。</li>
+		  			<li>CD-ROMの中身をどこかの適当なディレクトリに入れる。</li>
+		  			<li>CD-ROMの中身が入った場所にこのコミケカタログビュアー一式をコピーする。</li>
+		  			<li>このファイルをFirefox8以上で開く。</li>
+		  			<li>「変換元ファイル」でCDATAディレクトリの中身を全部選択する。Shiftキーを押しながら選択をするとできる。</li>
+		  			<li>「ファイルのJSON変換」ボタンを押す</li>
+		  			<li>完了ダイアログが出るまで待つ。</li>
+		  			<li>「ダウンロード」リンクが出現するので、カーソルを合わせて右クリック。</li>
+		  			<li>コンテキストメニューから「URL先を名前をつけて保存で保存」。ファイル名は<strong>comikeData.js</strong>にする。</li>
+		  			<li>次にZipファイル、C0XXCUTL.CCZ、C0XXCUTH.CCZを解凍する。保存ディレクトリ名はC079CUTL.CCZ_FILES,C079CUTH.CCZ_FILESにする。</li>
+		  		</OL>
+		  </div>
+		  <div  class="readme">
+			  <label for="inputfiles">　変換元ファイル </label>
+			  <input id="inputfiles" type="file" multiple="true" />
+			  <input id="submit" type="button" value="ファイルのJSON変換" />
+		  </div>
+		</div>
+	  </form>
+	</div>
+	<div id="fileInfo">
+		<p id="fileinfotext"></p>
+	</div>
+	<div id="result">そのまま開かず、右クリックでURL先を名前<strong>comikeData.js</strong>をつけて保存で保存。すぐに終わるよ！
+		<p>
+			<a id="download" target='_blank' href=''>ダウンロード</a>
+		</p>
+		※もし、そのままクリックして開いてしまったら確実にFirefoxがフリーズするので注意。
+	</div>
+</div>
+</body>
+</html> 
