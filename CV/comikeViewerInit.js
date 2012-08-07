@@ -125,10 +125,10 @@ function cvInit(){
 			ComiketAreas[mapCount]=condition;;
 			for(var j=1;j<=dayCount;j++){
 				const mapFileKey = Wdays["wday"+j]+condition;
-				ComiketMapImagePath[mapFileKey+MAP_PREFIX_HD]="./"+MDATA+"/"+MAP_PREFIX_HD+j+conditionE+CUT_EXTENTION;
-				ComiketMapImagePath[mapFileKey+MAP_PREFIX_LD]="./"+MDATA+"/"+MAP_PREFIX_LD+j+conditionE+CUT_EXTENTION;
-				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_HD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_HD+j+conditionE+CUT_EXTENTION;
-				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_LD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_LD+j+conditionE+CUT_EXTENTION;
+				ComiketMapImagePath[mapFileKey+MAP_PREFIX_HD]="./"+MDATA+"/"+MAP_PREFIX_HD+j+conditionE+MAP_EXTENTION;
+				ComiketMapImagePath[mapFileKey+MAP_PREFIX_LD]="./"+MDATA+"/"+MAP_PREFIX_LD+j+conditionE+MAP_EXTENTION;
+				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_HD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_HD+j+conditionE+MAP_EXTENTION;
+				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_LD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_LD+j+conditionE+MAP_EXTENTION;
 				if(conditionE.indexOf("E")>=0){
 					ComiketMapImagePath[mapFileKey+MAP_WIDTH_LD]=MAP_WIDTH_LD_E;
 					ComiketMapImagePath[mapFileKey+MAP_HEIGHT_LD]=MAP_HEIGHT_LD_E;
