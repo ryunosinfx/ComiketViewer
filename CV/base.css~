@@ -303,7 +303,6 @@ html , body {
     text-align:center;
     z-index: 11001;
     letter-spacing: -3px;
-	cursor: pointer;
 }
 .circleDetail img{
     position: relative;

@@ -875,7 +875,7 @@ ViewCircleDetail.prototype={
 	},
 	beInvisibleGenre:function(event){
 		var self = event.data.self;
-		if(self.isVisibleGenreFix===false){
+		if(self.isVisibleGenreFix===false;){
 		self.circleDetailGenreTips.css("visibility","hidden");
 		}
 	},
