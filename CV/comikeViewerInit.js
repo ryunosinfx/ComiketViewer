@@ -194,7 +194,7 @@ function viewInit(){
 		var areaObj = $("#area"+(dataArrayKey*1+1));
 		var dataArray = def.ComiketMap.dataDef[dataArrayKey];
 		const mapStr=dataArray[0];
-		areaObj.css("display","block").text(mapStr);
+		areaObj.css("display","block").text(mapStr).css("background-color",siteColorList[mapStr]);
 		if((dataArrayKey*1+1)==1){
 			currentMap = mapStr;
 		};
@@ -263,25 +263,57 @@ function viewInitFrame(vcm,vdhlObj){
 		var cObj = blockList[block];
 		var blockLink = $("<div id='"+BLOCK+block+"' class='"+BLOCK+"'>"+block+"</>").bind("click",{"cObj":cObj,"wday":blockByDayList[block]},goToTheCircleSpace);
 		var ComiketAreaDetail = ComiketAreaDetailsParBlock[block];
-		ComiketAreaDetail = ComiketAreaDetail===undefined?new ComiketArea("","","",""):ComiketAreaDetail;
-		var siteName = ComiketAreaDetail.getMapName();
-		var siteColor = siteColorList[siteName];
-		hedderTopLine.append(blockLink.css("border-bottom-color",siteColor));
-		blockLink.bind("mouseover",{"mapName":siteName,"MapNameObj":MapNameObj,'siteColor':siteColor},showMapName);
-		blockLink.bind("mouseout",{"mapName":siteName,"MapNameObj":MapNameObj},hideMapName);
+		if(ComiketAreaDetail!==undefined){
+			var siteName = ComiketAreaDetail.getMapName();
+			var siteColor = siteColorList[siteName];
+			hedderTopLine.append(blockLink.css("border-bottom-color",siteColor));
+			blockLink.bind("mouseover",{"mapName":siteName,"MapNameObj":MapNameObj,'siteColor':siteColor},showMapName);
+			blockLink.bind("mouseout",{"mapName":siteName,"MapNameObj":MapNameObj},hideMapName);
+		}
 	}
 	//alert("siteColorList:"+siteColorList.toSource());
 	const footerBottomLine = $("#footerBottomLine");
 	const target=$("#genreTips");
 	const GenreTipsObj=new GenreTips();
+	var resortGenreMap={};
 	for(var i=0;i<ComiketGenresKeys.length;i++){
-		const genre = ComiketGenresKeys[i];
+	
+		var genre = ComiketGenresKeys[i];
 		var cObj = genreList[genre];
-		const genreObj= $("<div id='"+GENRE+genre+"' class='"+GENRE+"'>"+cObj.getGenreName().replace(/・/g,"･").replace(/ /g,"").replace(/ー/g,"-")+"</>").bind("click",{"cObj":cObj},goToTheCircleSpace);
-		footerBottomLine.append(genreObj);
-		genreObj.bind("mouseover",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beVisible);
-		genreObj.bind("mouseout",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
-		genreObj.css("background-color",initStateUtils.getGenreColor(cObj.getGenreCD()));
+		var wday = cObj.getWday();
+		var ComiketAreaDetail = ComiketAreaDetailsParBlock[cObj.getBlock()];
+		//alert("ComiketAreaDetail:"+ComiketAreaDetail+"/cObj.getBlock():"+cObj.getBlock());
+		var siteName = ComiketAreaDetail===undefined?"":ComiketAreaDetail.getMapName();
+		if(resortGenreMap[wday]===undefined){
+			resortGenreMap[wday] = {};
+		}
+		if(resortGenreMap[wday][siteName]===undefined){
+			resortGenreMap[wday][siteName] =[];
+		}
+		resortGenreMap[wday][siteName].push(genre);
+	}
+	
+	var topObj= $("<div id='"+GENRE+"Top' class='GENREHEAD'>★</>");//.bind("click",{"cObj":cObj},goToTheCircleSpace);
+	footerBottomLine.append(topObj);
+	for(var n=0;n<dayCount;n++){
+		var dayStr=Wdays["wday"+(n+1)];
+		var dayObj= $("<div id='"+GENRE+dayStr+"' class='GENREHEAD'>"+dayStr+"</>");
+		footerBottomLine.append(dayObj);
+		
+		for(var j=0;j<siteList.length;j++){
+			var siteName = siteList[j];
+			var genreListParDaySite = resortGenreMap[dayStr][siteName];
+			for(var m=0;m<genreListParDaySite.length;m++){
+				var genre = genreListParDaySite[m];
+				var cObj = genreList[genre];
+			//alert("dayStr:"+dayStr);
+				var genreObj= $("<div id='"+GENRE+genre+"' class='"+GENRE+"'>"+cObj.getGenreName().replace(/・/g,"･").replace(/ /g,"").replace(/ー/g,"-")+"</>").bind("click",{"cObj":cObj},goToTheCircleSpace);
+				footerBottomLine.append(genreObj);
+				genreObj.bind("mouseover",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beVisible);
+				genreObj.bind("mouseout",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
+				genreObj.css("background-color",initStateUtils.getGenreColor(cObj.getGenreCD())).css("border-color",siteColorList[siteName]);
+			}
+		}
 	}
 	viewInitMap();
 	return true;
@@ -689,7 +721,8 @@ function changeView(event){
 		for(var i=1;i<=mapCount;i++){
 			doUnselectedArea($("#area"+i));
 		}
-		doSelectedArea($("#area"+index));
+		var areaButton = $("#area"+index);
+		doSelectedArea(areaButton);
 	}
 	$(".selectCircle").css("display","none");
 	var condition=currentWday+currentMap;
@@ -760,6 +793,7 @@ ViewCurrentMap.prototype={
 		currentMapObj.unbind("click");
 		currentMapObj.children().unbind("click");
 		//alert("self.mapCloseButton.attr('clientHeight'):"+self.mapCloseButton.height()+"/self.mapCloseButton:"+self.mapCloseButton.get(0).height);
+		self.map.css("background-color",siteColorList[currentMap]);
 		self.mapCloseButton.unbind("click");
 		self.mapCloseButton.bind("click",{"self":self},self.toggleView);
 		self.isBuilted=true;
