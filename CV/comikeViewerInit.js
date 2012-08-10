@@ -4,6 +4,7 @@ var ComiketAreas={};
 var ComiketMapImagePath={};
 var ComiketAreaDetails={};
 var ComiketAreaDetailsParBlock={};
+var ComiketAreaParBlock={};
 var Wdays ={};
 var Comiket="";
 var ComiketNo="";
@@ -37,6 +38,8 @@ var circleCutWidthLDHalfMinus=0;
 var ViewCircleDetailObj;
 var blockList ={};
 var genreList ={};
+var siteList =[];
+var siteColorList ={};
 var viewDetailHistory=[];
 var initStateUtils={};
 
@@ -116,9 +119,16 @@ function cvInit(){
 		}
 		dayCount= count;
 		//-------------------
+		var dataArray = def.ComiketMap.dataDef;
+		for(var a=0;a<dataArray.length;a++){
+			var siteName = dataArray[a][0];
+			siteList.push(siteName);
+			siteColorList[siteName]=siteColors[a];
+		}
+		//-------------------
 		for(var dataArrayKey in def.ComiketMap.dataDef){
-			mapCount++;
 			var dataArray = def.ComiketMap.dataDef[dataArrayKey];
+			mapCount++;
 			const condition = dataArray[0];
 			const conditionE = dataArray[1];
 			ComiketAreas[condition]=dataArray;
@@ -248,10 +258,19 @@ function viewInitFrame(vcm,vdhlObj){
 		}
 		blockByDayList[blockKey][wdayBlock.substr(0,1)]=blocks[wdayBlock];
 	}
+	var MapNameObj = $("#mapName");
 	for(var block in blockList){
 		var cObj = blockList[block];
-		hedderTopLine.append($("<div id='"+BLOCK+block+"' class='"+BLOCK+"'>"+block+"</>").bind("click",{"cObj":cObj,"wday":blockByDayList[block]},goToTheCircleSpace));
+		var blockLink = $("<div id='"+BLOCK+block+"' class='"+BLOCK+"'>"+block+"</>").bind("click",{"cObj":cObj,"wday":blockByDayList[block]},goToTheCircleSpace);
+		var ComiketAreaDetail = ComiketAreaDetailsParBlock[block];
+		ComiketAreaDetail = ComiketAreaDetail===undefined?new ComiketArea("","","",""):ComiketAreaDetail;
+		var siteName = ComiketAreaDetail.getMapName();
+		var siteColor = siteColorList[siteName];
+		hedderTopLine.append(blockLink.css("border-bottom-color",siteColor));
+		blockLink.bind("mouseover",{"mapName":siteName,"MapNameObj":MapNameObj,'siteColor':siteColor},showMapName);
+		blockLink.bind("mouseout",{"mapName":siteName,"MapNameObj":MapNameObj},hideMapName);
 	}
+	//alert("siteColorList:"+siteColorList.toSource());
 	const footerBottomLine = $("#footerBottomLine");
 	const target=$("#genreTips");
 	const GenreTipsObj=new GenreTips();
@@ -706,11 +725,14 @@ var ViewCurrentMap = function(){
 	this.left	=(this.map.css("left").match(/([0-9]+)[a-zA-Z]*/)||[])[1];
 	this.map.attr("firstTop",this.top);
 	this.map.attr("firstLeft",this.left);
+	this.mapCloseButton;
+	this.closeButtonOffset = 20;
+	this.button=currentMapObj = $("#currentMap");
 }
 ViewCurrentMap.prototype={
 	toggleView:function(event){
 		const self= event.data.self;
-		const button= event.data.button;
+		const button= self.button;
 		if(self.isBuilted){
 			if(self.isVisible){
 				self.toInvisible(self,button);
@@ -729,16 +751,22 @@ ViewCurrentMap.prototype={
 		const path1 = ComiketMapImagePath[condition+MAP_PREFIX_LD];
 		const path2 = ComiketMapImagePath[condition+MAP_PREFIX_GENRE_LD];
 		//alert(condition);
-		const currentMapObj =self.map.append("<img src='"+path2+"' width='"+width+"' height='"+height+"'><img src='"+path1+"' width='"+width+"' height='"+height+"'><div id='viewaAreaSquare' />")
+		const currentMapObj =self.map.append("<img src='"+path2+"' width='"+width+"' height='"+height+"'><img src='"+path1+"' width='"+width+"' height='"+height+"'><div class='circleDetailCloseButton' id='currentCloseButton'>☓</div><div id='viewaAreaSquare' />")
 			.css("width",width).css("height",height).css("right",0);
-		currentMapObj.children("img:last").css("top",-1*height-MAP_VIEW_ADJUST_Y_PX);
+		var mapImg = currentMapObj.children("img:last");
+		mapImg.css("top",-1*height-MAP_VIEW_ADJUST_Y_PX);
+		self.mapCloseButton=currentMapObj.children("div:first");
+		self.mapCloseButton.css("top",-height*2-MAP_VIEW_ADJUST_Y_PX*2);
 		currentMapObj.unbind("click");
 		currentMapObj.children().unbind("click");
+		//alert("self.mapCloseButton.attr('clientHeight'):"+self.mapCloseButton.height()+"/self.mapCloseButton:"+self.mapCloseButton.get(0).height);
+		self.mapCloseButton.unbind("click");
+		self.mapCloseButton.bind("click",{"self":self},self.toggleView);
 		self.isBuilted=true;
 		self.isVisible=true;
 		self.showViewArea({"data":{"self":self}});
-		currentMapObj.unbind("click");
-		currentMapObj.bind("click",{"self":self},self.geToTheClickPoint);
+		mapImg.unbind("click");
+		mapImg.bind("click",{"self":self},self.geToTheClickPoint);
 	},
 	changePlace:function(event){
 		const self= event.data.self;
@@ -755,12 +783,12 @@ ViewCurrentMap.prototype={
 		if(self.isVisible){
 			var condition=currentWday+currentMap;
 			var heightMap = ComiketMapImagePath[condition+MAP_HEIGHT_SD];
-			var target = self.map.children("div");
+			var target = self.map.children("div").eq(1);
 			var width=viewArea.width*viewArea.xRacio;
 			var height=viewArea.height*viewArea.yRacio;
 			var top=viewArea.top*viewArea.yRacio;
 			var left=viewArea.left*viewArea.xRacio;
-			target.css("width",width).css("height",height).css("top",top-(2*heightMap)-MAP_VIEW_ADJUST_Y_PX*2).css("left",left);
+			target.css("width",width).css("height",height).css("top",top-(2*heightMap)-MAP_VIEW_ADJUST_Y_PX*2-self.closeButtonOffset).css("left",left);
 		}
 	},
 	toVisible:function(self,button){
@@ -784,7 +812,7 @@ ViewCurrentMap.prototype={
         var hy = event.clientY;
 		var viewArea = getCurrentVisibleArea();
         var p = self.map.position();
-        var top = (hy - self.top)/viewArea.yRacio-(visibleArea.height)/2;
+        var top = (hy - self.top)/viewArea.yRacio-(visibleArea.height)/2-self.closeButtonOffset;
         var left = (hx - self.left)/viewArea.xRacio-(visibleArea.width)/2;
         $('html,body').animate({ scrollTop: top ,scrollLeft: left}, 'fast');
 	}
@@ -876,7 +904,7 @@ ViewCircleDetail.prototype={
 	beInvisibleGenre:function(event){
 		var self = event.data.self;
 		if(self.isVisibleGenreFix===false){
-		self.circleDetailGenreTips.css("visibility","hidden");
+			self.circleDetailGenreTips.css("visibility","hidden");
 		}
 	},
 	tolggeVisibility:function(event){
@@ -959,6 +987,16 @@ function goToTheCircleSpaceExec(event){
     top = mapBottom>top ? hy -(mapBottom - top)-5:top;
     left = mapRight>left ? hx -(mapRight -left)+ cObj.getABOffset(cObj):left;
     $('html,body').animate({ scrollTop: top ,scrollLeft: left}, 'fast');
+}
+function showMapName(event){
+	var text = event.data.mapName;
+	var target= event.data.MapNameObj;
+	event.data.MapNameObj.css("display","block");
+	var x =event.clientX;
+	target.text(text).css("left",x).css("background-color",event.data.siteColor);
+}
+function hideMapName(event){
+	event.data.MapNameObj.css("display","none");
 }
 
 var GenreTips=function(){
