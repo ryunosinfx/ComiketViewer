@@ -299,13 +299,14 @@ function viewInitFrame(vcm,vdhlObj){
 		var dayStr=Wdays["wday"+(n+1)];
 		var dayObj= $("<div id='"+GENRE+dayStr+"' class='GENREHEAD'>"+dayStr+"</>");
 		footerBottomLine.append(dayObj);
-		
+		var cObjList=[];
 		for(var j=0;j<siteList.length;j++){
 			var siteName = siteList[j];
 			var genreListParDaySite = resortGenreMap[dayStr][siteName];
 			for(var m=0;m<genreListParDaySite.length;m++){
 				var genre = genreListParDaySite[m];
 				var cObj = genreList[genre];
+				cObjList.push(cObj);
 			//alert("dayStr:"+dayStr);
 				var genreObj= $("<div id='"+GENRE+genre+"' class='"+GENRE+"'>"+cObj.getGenreName().replace(/・/g,"･").replace(/ /g,"").replace(/ー/g,"-")+"</>").bind("click",{"cObj":cObj},goToTheCircleSpace);
 				footerBottomLine.append(genreObj);
@@ -314,6 +315,8 @@ function viewInitFrame(vcm,vdhlObj){
 				genreObj.css("background-color",initStateUtils.getGenreColor(cObj.getGenreCD())).css("border-color",siteColorList[siteName]);
 			}
 		}
+		dayObj.bind("mouseover",{"trunc":genreObj,"target":target,"cObjList":cObjList},GenreTipsObj.beVisibleOnTheDay);
+		dayObj.bind("mouseout",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
 	}
 	viewInitMap();
 	return true;
@@ -1042,11 +1045,15 @@ GenreTips.prototype={
 		const cObj = event.data.cObj;
 		const viewArea = getCurrentVisibleArea();
 		const index= 	Wdays[cObj.getWday()+INDEX];
-		const item = TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,cObj.getAreaCondition().substr(1))+"<br />"+cObj.getGenreCD() +"<br /><span>"+cObj.getGenreName()+"</span>";//名称、開催日、曜日、エリア
+		var spaceStr = cObj.getAreaCondition().substr(1);
+		spaceStr = "<div class='genreTipSpace' style='background-color:"+siteColorList[spaceStr]+";color:white;'>"+spaceStr+"</div>";
+		const item = TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+"<br />"+cObj.getGenreCD() +"<br /><span>"+cObj.getGenreName()+"</span>";//名称、開催日、曜日、エリア
 		target.html(item);
 		const bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
+		target.css("height",cssGenreTipsHeight);
 		const height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
-		const width =(target.css("width").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		const width =this.cssWidth;//(target.css("width").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		target.css("width",cssGenreTipsWidth);
 		const left =trunc.position().left;
 		const currentRight=width*1+left*1;
 		//alert("currentRight:"+currentRight+"/viewArea.width:"+viewArea.width);
@@ -1057,6 +1064,45 @@ GenreTips.prototype={
 		}
 		target.css("background-color",initStateUtils.getGenreColor(cObj.getGenreCD()));
 		target.css("top",(visibleArea.bottom-bottom-height*1)+"px");
+		target.css("display","block");
+	},
+	beVisibleOnTheDay:function(event){
+		const trunc = event.data.trunc;
+		const target = event.data.target;
+		const cObjList = event.data.cObjList;
+		const viewArea = getCurrentVisibleArea();
+		var body = $("<div class='genreListBody'></div>");
+		var lineHetight =0;
+		target.html("");
+		target.append(body);
+		for(var i =0;i< cObjList.length ;i++){
+			var cObj = cObjList[i];
+			var index= 	Wdays[cObj.getWday()+INDEX];
+			var spaceStr = cObj.getAreaCondition().substr(1);
+			var genreColor = initStateUtils.getGenreColor(cObj.getGenreCD());
+			spaceStr = "<div class='genreTipSpace' style='background-color:"+siteColorList[spaceStr]+";color:white;'>"+spaceStr+"</div>";
+			const item = $("<div class='genreTipBar' style='background-color:"+genreColor+"'>"+TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+" "+cObj.getGenreCD() +"<span> "+cObj.getGenreName()+"</span>"+"</div>");//名称、開催日、曜日、エリア
+			body.append(item); 
+			lineHetight +=(item.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1;
+			lineHetight +=(item.css("padding-bottom").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*2;
+			lineHetight +=(item.css("margin-bottom").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*2;
+		}
+		const bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
+		const height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		target.css("width","305");
+		const width =305;
+		const left = trunc.position().left;
+		const currentRight=width*1+left*1;
+		//alert("currentRight:"+currentRight+"/viewArea.width:"+viewArea.width);
+		if(currentRight > viewArea.width*1){
+			target.css("left",(visibleArea.right*1)+"px");
+		}else{
+			target.css("left",(visibleArea.left+left-width)+"px");
+		}
+		target.css("height","100%");
+		target.css("background-color","black");
+		target.css("color","white");
+		target.css("top",(visibleArea.bottom-bottom-lineHetight)+"px");
 		target.css("display","block");
 	},
 	beInvisible:function(event){
