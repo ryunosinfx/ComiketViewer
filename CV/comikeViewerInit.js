@@ -42,6 +42,12 @@ var siteList =[];
 var siteColorList ={};
 var viewDetailHistory=[];
 var initStateUtils={};
+var MapTrunc =$("#map").css("top","0px").css("left","-20px");
+var mapSpaceTimes=3;
+var mapSpaceOffsetY=CUT_HEIGHT_LD * mapSpaceTimes;
+var mapSpaceOffsetX=CUT_WIDTH_LD * mapSpaceTimes;
+var isInOrderView = true;
+
 
 $(document).ready(function(){
 	try{
@@ -315,8 +321,8 @@ function viewInitFrame(vcm,vdhlObj){
 				genreObj.css("background-color",initStateUtils.getGenreColor(cObj.getGenreCD())).css("border-color",siteColorList[siteName]);
 			}
 		}
-		dayObj.bind("mouseover",{"trunc":genreObj,"target":target,"cObjList":cObjList},GenreTipsObj.beVisibleOnTheDay);
-		dayObj.bind("mouseout",{"trunc":genreObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
+		dayObj.bind("mouseover",{"trunc":dayObj,"target":target,"cObjList":cObjList},GenreTipsObj.beVisibleOnTheDay);
+		dayObj.bind("mouseout",{"trunc":dayObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
 	}
 	viewInitMap();
 	return true;
@@ -329,7 +335,7 @@ function viewInitMap(condition,func,args){
 	if(condition===undefined){
 		condition=currentWday+currentMap;
 	}
-	const trunc =$("#map").css("top","0px").css("left","-20px");
+	var trunc =$("#map").css("top","0px").css("left","-20px");
 	const width  = ComiketMapImagePath[condition+MAP_WIDTH_LD] * MapResioLDx * MAP_RACIO_LD_X;
 	const height = ComiketMapImagePath[condition+MAP_HEIGHT_LD] * MapResioLDy * MAP_RACIO_LD_Y;
 	const isShowBack=$("#isNoShowBackgroundMap").get(0).checked;
@@ -360,13 +366,29 @@ function viewInitMap(condition,func,args){
 	mapSizeWidth=width;
 	mapSizeHeight=height;
 	var count=0;
-	for(var key in Circles){
-		Circles[key].initVisible(Circles[key],condition,trunc);
-		count++;
+	if(isInOrderView){
+		$(window).bind("scroll",{"trunc":trunc},onScrollOnMap);
+		onScrollOnMap();
+	}else{
+	
+		for(var key in Circles){
+			Circles[key].initVisible(Circles[key],condition,trunc);
+			count++;
+		}
 	}
+	MapTrunc = trunc;
 	setViewTotalCount(count);
 	setDoLast(func,args);
 	return true;
+}
+function onScrollOnMap(event){
+	var condition=currentWday+currentMap;
+	var viewArea = getCurrentVisibleArea();
+	var trunc = event===undefined ? $("#map").css("top","0px").css("left","-20px"):event.data.trunc;
+	for(var key in Circles){
+		var cObj = Circles[key];
+		cObj.tolgeViewWithScroll(cObj,trunc,condition,viewArea);
+	}
 }
 var funcs=[];
 var argss=[];
@@ -386,7 +408,6 @@ var nowViewCount =0;
 function viewCountAndIsLast(){
 	nowViewCount++;
 	if(nowViewCount==totalViwCount+1){
-		nowLoadingDiv.css("display","none");
 		for(var i=0;i<funcs.length;i++){
 			funcs[i](argss[i]);
 		}
@@ -394,6 +415,7 @@ function viewCountAndIsLast(){
 		argss=[];
 		window.clearInterval ( timeLoading );
 	}
+	nowLoadingDiv.css("display","none");
 	return true;
 }
 function setViewTotalCount(count){
@@ -630,7 +652,34 @@ Circle.prototype={
 			self.beVisible(self);
 		}
 	},
-	isOnVisibleArea:function(self){
+	tolgeViewWithScroll:function(self,trunc,condition,viewArea){
+		if(self.tolgeViewOnArea(self,condition) && self.isOnVisibleArea(self,viewArea)){
+			//self.isVisible=false;
+			self.beVisible(self,trunc);
+		}else{
+			//self.isVisible =true;
+			self.beInVisible(self,trunc);
+		}
+	},
+	isOnVisibleArea:function(self,viewArea){
+		
+		if(viewArea!==undefined){
+			var cObj = self;
+			var top=VIEW_OFFSET_TOP+self.getPosition().getTop();
+			var left=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
+			//var bottom = top+circleCutHeightLD;
+			//var right = left+circleCutWidthLD;
+			if(
+					viewArea.top < top	+mapSpaceOffsetY 
+				&& viewArea.left < left	+mapSpaceOffsetX 
+				//&& viewArea.right > right	-mapSpaceOffsetX 
+				//&& viewArea.bottom > bottom	-mapSpaceOffsetY 
+			){
+				return true;
+			}else{
+				return false;
+			}
+		}
 		return true;
 	},
 	initVisible:function(self,currentVisibleArea,trunc){
@@ -645,21 +694,23 @@ Circle.prototype={
 		if(self.isVisible==true){
 			return ;
 		}
-		trunc.append(self.buildCircleView(self));
+		self.buildCircleView(self,trunc);
 		self.isVisible=true;
 	},
 	beInVisible:function(self,trunc){
-		if(self.isVisible==false){
+		if(self.circleDomBranche===undefined){
 			return ;
 		}
-		var circleDomBranche = self.circleDomBranche;
-		if(circleDomBranche.children().length < 1){
-			circleDomBranche=$("#C"+self.getCutId());
-			//alert(self.getCutId());
-		}else{
+		if(self.circleDomBranche!==undefined){
+			var circleDomBranche = self.circleDomBranche;
+			if(circleDomBranche.children().length < 1){
+				circleDomBranche=$("#C"+self.getCutId());
+				//alert(self.getCutId());
+			}
+			circleDomBranche.children().remove("div");
+			circleDomBranche.remove("div");
+			self.circleDomBranche=undefined;
 		}
-		circleDomBranche.children().remove("div");
-		circleDomBranche.remove("div");
 		trunc.remove("#C"+self.getCutId());
 		self.isVisible=false;
 	},
@@ -670,8 +721,9 @@ Circle.prototype={
 			return circleCutWidthLDHalfPlus;
 		}
 	},
-	buildCircleView:function (cObj){
-		var body=$("<div class='circle'></div>").attr("id","C"+cObj.getCutId()).css("width",circleCutWidthLD).css("height",circleCutHeightLD);
+	buildCircleView:function (cObj,trunc){
+		var body=$("<div class='circle'></div>");
+		body.attr("id","C"+cObj.getCutId()).css("width",circleCutWidthLD).css("height",circleCutHeightLD);
 		body.bind("click",{"self":ViewCircleDetailObj,"cObj":cObj,"vdhlObj":cObj.vdhlObj},ViewCircleDetailObj.setDetail);
 		cObj["circleDomBranche"]=body;
 		body.css("background-image","url(./"+cObj.getLDfileName(cObj)+")");
@@ -683,7 +735,7 @@ Circle.prototype={
 		const top=VIEW_OFFSET_TOP+cObj.getPosition().getTop();
 		const left=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
 		body.css("top",top).css("left",left+cObj.getABOffset(cObj));
-		
+		trunc.append(body);
 		return body;
 	}
 }
@@ -1097,7 +1149,7 @@ GenreTips.prototype={
 		if(currentRight > viewArea.width*1){
 			target.css("left",(visibleArea.right*1)+"px");
 		}else{
-			target.css("left",(visibleArea.left+left-width)+"px");
+			target.css("left",(visibleArea.left+left)+"px");
 		}
 		target.css("height","100%");
 		target.css("background-color","black");
