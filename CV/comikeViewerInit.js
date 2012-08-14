@@ -135,13 +135,13 @@ function cvInit(){
 		for(var dataArrayKey in def.ComiketMap.dataDef){
 			var dataArray = def.ComiketMap.dataDef[dataArrayKey];
 			mapCount++;
-			const condition = dataArray[0];
-			const conditionE = dataArray[1];
+			var condition = dataArray[0];
+			var conditionE = dataArray[1];
 			ComiketAreas[condition]=dataArray;
 			ComiketAreas[condition+""+INDEX]=mapCount;
 			ComiketAreas[mapCount]=condition;;
 			for(var j=1;j<=dayCount;j++){
-				const mapFileKey = Wdays["wday"+j]+condition;
+				var mapFileKey = Wdays["wday"+j]+condition;
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_HD]="./"+MDATA+"/"+MAP_PREFIX_HD+j+conditionE+MAP_EXTENTION;
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_LD]="./"+MDATA+"/"+MAP_PREFIX_LD+j+conditionE+MAP_EXTENTION;
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_HD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_HD+j+conditionE+MAP_EXTENTION;
@@ -199,7 +199,7 @@ function viewInit(){
 	for(var dataArrayKey in def.ComiketMap.dataDef){
 		var areaObj = $("#area"+(dataArrayKey*1+1));
 		var dataArray = def.ComiketMap.dataDef[dataArrayKey];
-		const mapStr=dataArray[0];
+		var mapStr=dataArray[0];
 		areaObj.css("display","block").text(mapStr).css("background-color",siteColorList[mapStr]);
 		if((dataArrayKey*1+1)==1){
 			currentMap = mapStr;
@@ -207,10 +207,10 @@ function viewInit(){
 		areaObj.bind("click",{"map":mapStr,"index":(dataArrayKey*1+1)},changeView);
 	}
 	$("#comiketTitel").text(Comiket);
-	const currentMapObj = $("#currentMap");
-	const vcm= new ViewCurrentMap($("#mainContents"));
-	const checkList= $("#checkList");
-	const vdhlObj=new ViewDetailHistoyList($("#viewDetailHistory"),checkList);
+	var currentMapObj = $("#currentMap");
+	var vcm= new ViewCurrentMap($("#mainContents"));
+	var checkList= $("#checkList");
+	var vdhlObj=new ViewDetailHistoyList($("#viewDetailHistory"),checkList);
 	checkList.bind("click",{"self":vdhlObj},vdhlObj.tolggeVisibility);
 	viewInitFrame(vcm,vdhlObj);
 	doSelectedWday($("#wday1"));
@@ -278,9 +278,9 @@ function viewInitFrame(vcm,vdhlObj){
 		}
 	}
 	//alert("siteColorList:"+siteColorList.toSource());
-	const footerBottomLine = $("#footerBottomLine");
-	const target=$("#genreTips");
-	const GenreTipsObj=new GenreTips();
+	var footerBottomLine = $("#footerBottomLine");
+	var target=$("#genreTips");
+	var GenreTipsObj=new GenreTips();
 	var resortGenreMap={};
 	for(var i=0;i<ComiketGenresKeys.length;i++){
 	
@@ -336,12 +336,12 @@ function viewInitMap(condition,func,args){
 		condition=currentWday+currentMap;
 	}
 	var trunc =$("#map").css("top","0px").css("left","-20px");
-	const width  = ComiketMapImagePath[condition+MAP_WIDTH_LD] * MapResioLDx * MAP_RACIO_LD_X;
-	const height = ComiketMapImagePath[condition+MAP_HEIGHT_LD] * MapResioLDy * MAP_RACIO_LD_Y;
-	const isShowBack=$("#isNoShowBackgroundMap").get(0).checked;
+	var width  = ComiketMapImagePath[condition+MAP_WIDTH_LD] * MapResioLDx * MAP_RACIO_LD_X;
+	var height = ComiketMapImagePath[condition+MAP_HEIGHT_LD] * MapResioLDy * MAP_RACIO_LD_Y;
+	var isShowBack=$("#isNoShowBackgroundMap").get(0).checked;
 	if(isShowBack==false){
-		const path = ComiketMapImagePath[condition+MAP_PREFIX_HD];
-		const image=trunc.children("img");
+		var path = ComiketMapImagePath[condition+MAP_PREFIX_HD];
+		var image=trunc.children("img");
 		if(image.length<1 || image.attr("src",path).length < 1){
 			trunc.append("<img id='mapImage' src='"+path+"' width='"+width+"px' height='"+height+"px' alt='base'/>");
 			var img = document.getElementById("mapImage");
@@ -732,8 +732,8 @@ Circle.prototype={
 				"<div style='background-color:"+initStateUtils.getGenreColor(cObj.getGenreCD())+";'>"
 				+cObj.getAddress()+"<br/>"+cObj.getAB()+"</div>");
 		}
-		const top=VIEW_OFFSET_TOP+cObj.getPosition().getTop();
-		const left=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
+		var top=VIEW_OFFSET_TOP+cObj.getPosition().getTop();
+		var left=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
 		body.css("top",top).css("left",left+cObj.getABOffset(cObj));
 		trunc.append(body);
 		return body;
@@ -819,8 +819,8 @@ var ViewCurrentMap = function(){
 }
 ViewCurrentMap.prototype={
 	toggleView:function(event){
-		const self= event.data.self;
-		const button= self.button;
+		var self= event.data.self;
+		var button= self.button;
 		if(self.isBuilted){
 			if(self.isVisible){
 				self.toInvisible(self,button);
@@ -833,13 +833,13 @@ ViewCurrentMap.prototype={
 		}
 	},
 	builtView:function(self){
-		const condition=currentWday+currentMap;
-		const width = ComiketMapImagePath[condition+MAP_WIDTH_SD];
-		const height = ComiketMapImagePath[condition+MAP_HEIGHT_SD];
-		const path1 = ComiketMapImagePath[condition+MAP_PREFIX_LD];
-		const path2 = ComiketMapImagePath[condition+MAP_PREFIX_GENRE_LD];
+		var condition=currentWday+currentMap;
+		var width = ComiketMapImagePath[condition+MAP_WIDTH_SD];
+		var height = ComiketMapImagePath[condition+MAP_HEIGHT_SD];
+		var path1 = ComiketMapImagePath[condition+MAP_PREFIX_LD];
+		var path2 = ComiketMapImagePath[condition+MAP_PREFIX_GENRE_LD];
 		//alert(condition);
-		const currentMapObj =self.map.append("<img src='"+path2+"' width='"+width+"' height='"+height+"'><img src='"+path1+"' width='"+width+"' height='"+height+"'><div class='circleDetailCloseButton' id='currentCloseButton'>☓</div><div id='viewaAreaSquare' />")
+		var currentMapObj =self.map.append("<img src='"+path2+"' width='"+width+"' height='"+height+"'><img src='"+path1+"' width='"+width+"' height='"+height+"'><div class='circleDetailCloseButton' id='currentCloseButton'>☓</div><div id='viewaAreaSquare' />")
 			.css("width",width).css("height",height).css("right",0);
 		var mapImg = currentMapObj.children("img:last");
 		mapImg.css("top",-1*height-MAP_VIEW_ADJUST_Y_PX);
@@ -858,7 +858,7 @@ ViewCurrentMap.prototype={
 		mapImg.bind("click",{"self":self},self.geToTheClickPoint);
 	},
 	changePlace:function(event){
-		const self= event.data.self;
+		var self= event.data.self;
 		
 		self.map.children("img").remove();
 		self.map.children("div").remove();
@@ -867,8 +867,8 @@ ViewCurrentMap.prototype={
 		self.showViewArea(event);
 	},
 	showViewArea:function(event){
-		const self= event.data.self;
-		const viewArea = getCurrentVisibleArea();
+		var self= event.data.self;
+		var viewArea = getCurrentVisibleArea();
 		if(self.isVisible){
 			var condition=currentWday+currentMap;
 			var heightMap = ComiketMapImagePath[condition+MAP_HEIGHT_SD];
@@ -936,8 +936,8 @@ var ViewCircleDetail=function(circleDetailObj){
 }
 ViewCircleDetail.prototype={
 	setDetail:function(event){
-		const self = event.data.self;
-		const cObj = event.data.cObj;
+		var self = event.data.self;
+		var cObj = event.data.cObj;
 		addViewDetailHistory(cObj);
 		if(cObj.vdhlObj.isVisible==true ){
 			cObj.vdhlObj.setDetail({"data":{"self":cObj.vdhlObj,"cObj":cObj}});
@@ -1024,12 +1024,12 @@ ViewCircleDetail.prototype={
 
 function goToTheCircleSpace(event){
 	var cObj = event.data.cObj;
-	const vdhlObj = event.data.vdhlObj;
-	const wday = event.data.wday;
+	var vdhlObj = event.data.vdhlObj;
+	var wday = event.data.wday;
 	if(wday!==undefined){
 		cObj =wday[currentWday];
 	}
-	const condition = cObj.getAreaCondition();
+	var condition = cObj.getAreaCondition();
 	if(currentWday+currentMap!=cObj.getAreaCondition()){
 		nowLoadingDiv.css("display","block");
 		
@@ -1059,13 +1059,13 @@ function goToTheCircleSpace(event){
 	ViewCircleDetailObj.setDetail({"data":{"self":ViewCircleDetailObj,"cObj":cObj}});
 }
 function goToTheCircleSpaceExec(event){
-	const map = $("#currentMapView");
+	var map = $("#currentMapView");
 	var mapRight=0;
 	var mapBottom=0;
-	const viewArea = getCurrentVisibleArea();
-	const cObj = event.data.cObj;
-	const hy=VIEW_OFFSET_TOP+cObj.getPosition().getTop();
-	const hx=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
+	var viewArea = getCurrentVisibleArea();
+	var cObj = event.data.cObj;
+	var hy=VIEW_OFFSET_TOP+cObj.getPosition().getTop();
+	var hx=VIEW_OFFSET_LEFT+cObj.getPosition().getLeft()* MAP_RACIO_LD_X;
     var top = hy -(visibleArea.height )/2 + CUT_HEIGHT_LD;
     var left = hx -(visibleArea.width )/2 + CUT_WIDTH_LD + cObj.getABOffset(cObj);
     
@@ -1092,22 +1092,22 @@ var GenreTips=function(){
 }
 GenreTips.prototype={
 	beVisible:function(event){
-		const trunc = event.data.trunc;
-		const target = event.data.target;
-		const cObj = event.data.cObj;
-		const viewArea = getCurrentVisibleArea();
-		const index= 	Wdays[cObj.getWday()+INDEX];
+		var trunc = event.data.trunc;
+		var target = event.data.target;
+		var cObj = event.data.cObj;
+		var viewArea = getCurrentVisibleArea();
+		var index= 	Wdays[cObj.getWday()+INDEX];
 		var spaceStr = cObj.getAreaCondition().substr(1);
 		spaceStr = "<div class='genreTipSpace' style='background-color:"+siteColorList[spaceStr]+";color:white;'>"+spaceStr+"</div>";
-		const item = TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+"<br />"+cObj.getGenreCD() +"<br /><span>"+cObj.getGenreName()+"</span>";//名称、開催日、曜日、エリア
+		var item = TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+"<br />"+cObj.getGenreCD() +"<br /><span>"+cObj.getGenreName()+"</span>";//名称、開催日、曜日、エリア
 		target.html(item);
-		const bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
+		var bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
 		target.css("height",cssGenreTipsHeight);
-		const height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
-		const width =this.cssWidth;//(target.css("width").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		var height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		var width =this.cssWidth;//(target.css("width").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
 		target.css("width",cssGenreTipsWidth);
-		const left =trunc.position().left;
-		const currentRight=width*1+left*1;
+		var left =trunc.position().left;
+		var currentRight=width*1+left*1;
 		//alert("currentRight:"+currentRight+"/viewArea.width:"+viewArea.width);
 		if(currentRight > viewArea.width*1){
 			target.css("left",visibleArea.right+"px");
@@ -1119,10 +1119,10 @@ GenreTips.prototype={
 		target.css("display","block");
 	},
 	beVisibleOnTheDay:function(event){
-		const trunc = event.data.trunc;
-		const target = event.data.target;
-		const cObjList = event.data.cObjList;
-		const viewArea = getCurrentVisibleArea();
+		var trunc = event.data.trunc;
+		var target = event.data.target;
+		var cObjList = event.data.cObjList;
+		var viewArea = getCurrentVisibleArea();
 		var body = $("<div class='genreListBody'></div>");
 		var lineHetight =0;
 		target.html("");
@@ -1133,18 +1133,18 @@ GenreTips.prototype={
 			var spaceStr = cObj.getAreaCondition().substr(1);
 			var genreColor = initStateUtils.getGenreColor(cObj.getGenreCD());
 			spaceStr = "<div class='genreTipSpace' style='background-color:"+siteColorList[spaceStr]+";color:white;'>"+spaceStr+"</div>";
-			const item = $("<div class='genreTipBar' style='background-color:"+genreColor+"'>"+TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+" "+cObj.getGenreCD() +"<span> "+cObj.getGenreName()+"</span>"+"</div>");//名称、開催日、曜日、エリア
+			var item = $("<div class='genreTipBar' style='background-color:"+genreColor+"'>"+TITLE_BASE.replace(/YYYYMMDD/,Wdays["wdayFull"+index]).replace(/X/,index).replace(/SPACE/,spaceStr)+" "+cObj.getGenreCD() +"<span> "+cObj.getGenreName()+"</span>"+"</div>");//名称、開催日、曜日、エリア
 			body.append(item); 
 			lineHetight +=(item.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1;
 			lineHetight +=(item.css("padding-bottom").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*2;
 			lineHetight +=(item.css("margin-bottom").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*2;
 		}
-		const bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
-		const height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
+		var bottom =(trunc.parent().css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1]*1+4;
+		var height =(target.css("height").match(/([0-9]+)[a-zA-Z]*/)||[0])[1];
 		target.css("width","305");
-		const width =305;
-		const left = trunc.position().left;
-		const currentRight=width*1+left*1;
+		var width =305;
+		var left = trunc.position().left;
+		var currentRight=width*1+left*1;
 		//alert("currentRight:"+currentRight+"/viewArea.width:"+viewArea.width);
 		if(currentRight > viewArea.width*1){
 			target.css("left",(visibleArea.right*1)+"px");
@@ -1165,9 +1165,9 @@ GenreTips.prototype={
 	}
 };
 function searchExec(event){
-	const input=event.data.input;
-	const word= input.val();
-	const re = new RegExp(word, "i");
+	var input=event.data.input;
+	var word= input.val();
+	var re = new RegExp(word, "i");
 	alert("word:"+word);
 	input.css("background-color","white");
 	for(var key in Circles){
@@ -1205,16 +1205,16 @@ function searchExec(event){
 
 function addViewDetailHistory(cObj){
 	var tempArray=[];
-	const d = new Date();
-	const YYYY = d.getYear();
-	const MM = ((d.getMonth()+101)+"").substr(1);
-	const DD = ((d.getDate()+100)+"").substr(1);
-	const hh = ((d.getHours()+100)+"").substr(1);
-	const mm = ((d.getMinutes()+100)+"").substr(1);
-	const ss = ((d.getSeconds()+100)+"").substr(1);
+	var d = new Date();
+	var YYYY = d.getYear();
+	var MM = ((d.getMonth()+101)+"").substr(1);
+	var DD = ((d.getDate()+100)+"").substr(1);
+	var hh = ((d.getHours()+100)+"").substr(1);
+	var mm = ((d.getMinutes()+100)+"").substr(1);
+	var ss = ((d.getSeconds()+100)+"").substr(1);
 	tempArray.push({"cObj":cObj,"time":VIEW_DETAIL_TIME.replace(/YYYY/,YYYY).replace(/MM/,MM).replace(/DD/,DD).replace(/hh/,hh).replace(/mm/,mm).replace(/ss/,ss)});
 	for(var i=0;i<viewDetailHistory.length && i<MAX_VIEW_DETAIL_HISTRY_COUNT;i++){
-		const vdh=viewDetailHistory[i];
+		var vdh=viewDetailHistory[i];
 		if(vdh.cObj.getCutId()==cObj.getCutId()){
 			continue;
 		}
