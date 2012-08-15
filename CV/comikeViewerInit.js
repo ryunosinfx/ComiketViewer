@@ -13,6 +13,7 @@ var circleCutHeightLD=0;
 var circleCutWidthLD=0;
 var circleCutHeightHD=0;
 var Circles ={};
+var LorcalCircles ={};
 var CCZHDdir="";
 var CCZLDdir="";
 var circleCutWidthHD=0;
@@ -142,6 +143,7 @@ function cvInit(){
 			ComiketAreas[mapCount]=condition;;
 			for(var j=1;j<=dayCount;j++){
 				var mapFileKey = Wdays["wday"+j]+condition;
+//alert("mapFileKey:"+mapFileKey);
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_HD]="./"+MDATA+"/"+MAP_PREFIX_HD+j+conditionE+MAP_EXTENTION;
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_LD]="./"+MDATA+"/"+MAP_PREFIX_LD+j+conditionE+MAP_EXTENTION;
 				ComiketMapImagePath[mapFileKey+MAP_PREFIX_GENRE_HD]="./"+MDATA+"/"+MAP_PREFIX_GENRE_HD+j+conditionE+MAP_EXTENTION;
@@ -219,7 +221,18 @@ function viewInit(){
 	for(var i=0;i<dayCount;i++){
 		var wdayObj = $("#wday"+(i+1));
 		wdayObj.bind("click",{"self":vcm},vcm.changePlace);
+		for(var j=0;j<mapCount;j++){
+			var mapFileKey = Wdays["wday"+i]+ComiketAreas[j];
+			LorcalCircles[mapFileKey]={};
+			for(var key in Circles){
+				var cObj = Circles[key];
+				if(cObj.AreaCondition===mapFileKey){
+					LorcalCircles[mapFileKey][key] = cObj;
+				}
+			}
+		}
 	}
+	viewInitMap();
 	for(var dataArrayKey in def.ComiketMap.dataDef){
 		var areaObj = $("#area"+(dataArrayKey*1+1));
 		areaObj.bind("click",{"self":vcm},vcm.changePlace);
@@ -324,7 +337,6 @@ function viewInitFrame(vcm,vdhlObj){
 		dayObj.bind("mouseover",{"trunc":dayObj,"target":target,"cObjList":cObjList},GenreTipsObj.beVisibleOnTheDay);
 		dayObj.bind("mouseout",{"trunc":dayObj,"target":target,"cObj":cObj},GenreTipsObj.beInvisible);
 	}
-	viewInitMap();
 	return true;
 }
 
@@ -370,9 +382,9 @@ function viewInitMap(condition,func,args){
 		$(window).bind("scroll",{"trunc":trunc},onScrollOnMap);
 		onScrollOnMap();
 	}else{
-	
-		for(var key in Circles){
-			Circles[key].initVisible(Circles[key],condition,trunc);
+		var currentCircles = LorcalCircles[condition];
+		for(var key in currentCircles){
+			currentCircles[key].initVisible(currentCircles[key],condition,trunc);
 			count++;
 		}
 	}
@@ -385,8 +397,9 @@ function onScrollOnMap(event){
 	var condition=currentWday+currentMap;
 	var viewArea = getCurrentVisibleArea();
 	var trunc = event===undefined ? $("#map").css("top","0px").css("left","-20px"):event.data.trunc;
-	for(var key in Circles){
-		var cObj = Circles[key];
+	var currentCircles = LorcalCircles[condition];
+	for(var key in currentCircles){
+		var cObj = currentCircles[key];
 		cObj.tolgeViewWithScroll(cObj,trunc,condition,viewArea);
 	}
 }
