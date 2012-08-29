@@ -110,7 +110,7 @@ function cvInit(){
 		CCZLDdir=Cprefx+CUT_LD;
 		//-------------------
 		var count=0;
-		
+		//console.log("def.ComiketDate.dataDef:"+def.ComiketDate.dataDef.toSource());
 		for(dataArrayKey in def.ComiketDate.dataDef){
 			var dataArray = def.ComiketDate.dataDef[dataArrayKey];
 			count++;
@@ -221,8 +221,10 @@ function viewInit(){
 	for(var i=0;i<dayCount;i++){
 		var wdayObj = $("#wday"+(i+1));
 		wdayObj.bind("click",{"self":vcm},vcm.changePlace);
+		//console.log("Wdays:"+Wdays.toSource()+"/ComiketAreas:"+ComiketAreas.toSource());
 		for(var j=0;j<mapCount;j++){
-			var mapFileKey = Wdays["wday"+i]+ComiketAreas[j];
+			var mapFileKey = Wdays["wday"+(i+1)]+ComiketAreas[(j+1)];
+			console.log("mapFileKey:"+mapFileKey);
 			LorcalCircles[mapFileKey]={};
 			for(var key in Circles){
 				var cObj = Circles[key];
@@ -378,6 +380,7 @@ function viewInitMap(condition,func,args){
 	mapSizeWidth=width;
 	mapSizeHeight=height;
 	var count=0;
+//console.log("BBB condition:"+condition+"/isInOrderView:"+isInOrderView);
 	if(isInOrderView){
 		$(window).bind("scroll",{"trunc":trunc},onScrollOnMap);
 		onScrollOnMap();
@@ -393,15 +396,19 @@ function viewInitMap(condition,func,args){
 	setDoLast(func,args);
 	return true;
 }
+var lastContition;
 function onScrollOnMap(event){
 	var condition=currentWday+currentMap;
+	var isRefresh=lastContition= lastContition!==condition ? true:false;
+console.log("AAA condition:"+condition+"/isInOrderView:"+isInOrderView);
 	var viewArea = getCurrentVisibleArea();
 	var trunc = event===undefined ? $("#map").css("top","0px").css("left","-20px"):event.data.trunc;
 	var currentCircles = LorcalCircles[condition];
 	for(var key in currentCircles){
 		var cObj = currentCircles[key];
-		cObj.tolgeViewWithScroll(cObj,trunc,condition,viewArea);
+		cObj.tolgeViewWithScroll(cObj,trunc,condition,viewArea,isRefresh);
 	}
+	lastContition = condition;
 }
 var funcs=[];
 var argss=[];
@@ -665,8 +672,11 @@ Circle.prototype={
 			self.beVisible(self);
 		}
 	},
-	tolgeViewWithScroll:function(self,trunc,condition,viewArea){
+	tolgeViewWithScroll:function(self,trunc,condition,viewArea,isRefresh){
 		if(self.tolgeViewOnArea(self,condition) && self.isOnVisibleArea(self,viewArea)){
+			if(isRefresh){
+				self.beInVisible(self,trunc);
+			}
 			//self.isVisible=false;
 			self.beVisible(self,trunc);
 		}else{

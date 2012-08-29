@@ -17,11 +17,15 @@ form div{
 	min-width:5px;
 	padding:0px 3px 0px 0px;
 }
-form div.BLOCK,form div.GENRE{
+form div.BLOCK,form div.GENRE,form div.GENREHEAD{
 	font-size:8px;
 	text-align:center;
-	padding:0px 1px 0px 0px;
+	padding:0px 0px 0px 0px;
+	border-width:0px 0px 3px 0px;
+	border-style:solid;
+	border-color:blue;
 	width:6px;
+	height:12px;
 	cursor: pointer;
     opacity:0.8;
 }
@@ -33,6 +37,20 @@ form div.GENRE{
 	width:auto;
     opacity:1;
 }
+form div.GENREHEAD{
+	font-size:10px;
+	min-width:12px;
+	text-align:center;
+	height:14px;
+	padding:1px 2px;
+	letter-spacing: 2px;
+	border-width:0px ;
+	background-color:black;
+	font-weight:bold;
+	color:red;
+	width:auto;
+    opacity:1;
+}
 form div.BLOCK:hover,form div.GENRE:hover{
 	background-color:#51D059;
 	font-weight:bold;
@@ -40,6 +58,18 @@ form div.BLOCK:hover,form div.GENRE:hover{
 }
 h1{
 	height:16px;
+}
+.mapName{
+    position: absolute;
+	padding:1px 5px 0px 5px;
+	border-radius: 5px 5px 5px 5px / 5px 5px 5px 5px ;
+	border:2px solid white;
+	font-size:18px;
+	text-align:center;
+	height:26px;
+	color:white;
+	line-height:22px;
+	display:none;
 }
 /*---------------------------------*/
 #nowLoading{
@@ -397,6 +427,7 @@ html , body {
 }
 .circleDetail .detail .row .text{
 	width:188px;
+	overflow:auto;
 }
 #detailPR{
 	font-size:8px;
@@ -433,7 +464,7 @@ html , body {
 
 }
 
-.circleDetail .circleDetailCloseButton{
+.circleDetail .circleDetailCloseButton,.currntMap .circleDetailCloseButton{
     position: relative;
 	color:gray;
 	font-weight:bold;
@@ -449,9 +480,13 @@ html , body {
     cursor:pointer;
     opacity:1;
 }
-.circleDetail .circleDetailCloseButton:hover{
+.circleDetail .circleDetailCloseButton:hover,.currntMap .circleDetailCloseButton:hover{
 	color:#555555;
 	background-color:white;
+}
+.currntMap .circleDetailCloseButton{
+    top: 10px;
+    left: 0px;
 }
 /*---------------------------------------------*/
 .genreTipsAAs{
@@ -464,6 +499,24 @@ html , body {
     z-index: 2200;
 	border: solid 2px white;
 	bottom:15px;
+	border-radius: 3px 3px 3px 3px / 3px 3px 3px 3px ;
+}
+.genreTipSpace{
+	display:inline;
+	width:30px;
+	height:12px;
+	padding:2px;
+}
+.genreListBody{
+	width:300px;
+	border-radius: 3px 3px 3px 3px / 3px 3px 3px 3px ;
+
+}
+.genreTipBar{
+	width:300px;
+	height:12px;
+	padding:2px;
+	margin:1px;
 	border-radius: 3px 3px 3px 3px / 3px 3px 3px 3px ;
 }
 /*---------------------------------------------*/
